@@ -1,59 +1,198 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# POS + Inventory System — Architecture
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1. Stack
 
-## About Laravel
+| Layer | Choice |
+|---|---|
+| Backend | Laravel 11.x (PHP 8.2+) |
+| Frontend (back-office) | Blade + Tailwind CSS + jQuery |
+| Frontend (POS register) | Blade shell + jQuery + Service Worker + IndexedDB (PWA) |
+| DB | MySQL 8 |
+| Auth | Laravel Breeze (Blade stack), customized |
+| Authorization | spatie/laravel-permission (RBAC) |
+| PDF | barryvdh/laravel-dompdf (receipts, reports) |
+| Excel/CSV | maatwebsite/excel |
+| Activity log | spatie/laravel-activitylog |
+| Image handling | intervention/image |
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 2. Why Service–Repository, and where the boundaries are
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Repository**: ONLY persistence concerns — query building, eager loading, pagination. No business rules. One repository per Eloquent aggregate root (not per table — e.g. `Purchase` and `PurchaseItem` share the `PurchaseRepository` because they're always written together transactionally).
+- **Service**: business rules, transactions, orchestration across multiple repositories, events. This is where "decrement stock, write a stock movement, then create a sale" lives — not in the controller, not in the model.
+- **Controller**: HTTP only — validate via Form Request, call one Service method, return a response. No DB calls, no business logic.
+- **Models**: relationships, casts, scopes, accessors. No business logic that spans multiple models.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Contracts (interfaces) for repositories live in `app/Repositories/Contracts`, bound to Eloquent implementations in `RepositoryServiceProvider`. This is the one piece of indirection that pays for itself here: it lets the POS sync engine and a future API swap persistence/test doubles without touching services.
 
-## Learning Laravel
+## 3. Folder Structure
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```
+app/
+├── Console/Commands/
+│   ├── BackupDatabase.php
+│   └── RestoreDatabase.php
+├── Enums/
+│   ├── PaymentMethod.php
+│   ├── PaymentStatus.php
+│   ├── SaleStatus.php
+│   ├── StockMovementType.php
+│   ├── PurchaseStatus.php
+│   └── DiscountType.php
+├── Events/
+│   ├── SaleCompleted.php
+│   ├── StockLevelLow.php
+│   └── SaleRefunded.php
+├── Listeners/
+│   ├── DecrementStockOnSale.php
+│   ├── LogSaleActivity.php
+│   └── NotifyLowStock.php
+├── Exceptions/
+│   ├── InsufficientStockException.php
+│   └── DuplicateSaleException.php
+├── Http/
+│   ├── Controllers/
+│   │   ├── Admin/                  # back-office, session auth, Blade
+│   │   │   ├── DashboardController.php
+│   │   │   ├── ProductController.php
+│   │   │   ├── CategoryController.php
+│   │   │   ├── UnitController.php
+│   │   │   ├── SupplierController.php
+│   │   │   ├── PurchaseController.php
+│   │   │   ├── StockAdjustmentController.php
+│   │   │   ├── WarehouseController.php
+│   │   │   ├── CustomerController.php
+│   │   │   ├── SaleController.php
+│   │   │   ├── ReportController.php
+│   │   │   ├── SettingController.php
+│   │   │   ├── UserController.php
+│   │   │   ├── RoleController.php
+│   │   │   └── ActivityLogController.php
+│   │   ├── Pos/                    # cashier-facing, Blade shell + JSON
+│   │   │   ├── RegisterController.php
+│   │   │   └── PosController.php
+│   │   ├── Api/                    # JSON only — consumed by POS PWA's JS
+│   │   │   ├── ProductSearchController.php
+│   │   │   ├── SaleSyncController.php
+│   │   │   ├── CartPricingController.php
+│   │   │   └── CatalogSnapshotController.php
+│   │   └── Auth/                   # Breeze-generated, customized
+│   ├── Middleware/
+│   │   ├── EnsureUserIsActive.php
+│   │   ├── LogActivityMiddleware.php
+│   │   ├── CheckRegisterSession.php
+│   │   └── ForceJsonResponse.php
+│   ├── Requests/
+│   │   ├── Product/{Store,Update}ProductRequest.php
+│   │   ├── Purchase/{Store,Update}PurchaseRequest.php
+│   │   ├── Sale/StoreSaleRequest.php
+│   │   ├── Sale/SyncOfflineSaleRequest.php
+│   │   ├── Customer/{Store,Update}CustomerRequest.php
+│   │   └── Settings/UpdateStoreSettingsRequest.php
+│   └── Resources/                  # API Resources (JSON shaping for POS PWA)
+│       ├── ProductCatalogResource.php
+│       └── SaleSyncResultResource.php
+├── Models/
+│   (see ERD — one model per table, listed in section 4)
+├── Policies/
+│   ├── ProductPolicy.php
+│   ├── PurchasePolicy.php
+│   ├── SalePolicy.php
+│   ├── UserPolicy.php
+│   └── SettingPolicy.php
+├── Providers/
+│   ├── RepositoryServiceProvider.php
+│   └── EventServiceProvider.php
+├── Repositories/
+│   ├── Contracts/
+│   │   ├── ProductRepositoryInterface.php
+│   │   ├── StockRepositoryInterface.php
+│   │   ├── PurchaseRepositoryInterface.php
+│   │   ├── SaleRepositoryInterface.php
+│   │   ├── CustomerRepositoryInterface.php
+│   │   └── ... (one per aggregate)
+│   └── Eloquent/
+│       ├── BaseRepository.php       # shared CRUD, implements common contract
+│       ├── EloquentProductRepository.php
+│       ├── EloquentStockRepository.php
+│       ├── EloquentPurchaseRepository.php
+│       ├── EloquentSaleRepository.php
+│       └── EloquentCustomerRepository.php
+├── Services/
+│   ├── ProductService.php
+│   ├── StockService.php            # the only place stock is mutated
+│   ├── PurchaseService.php
+│   ├── PosService.php              # cart pricing, checkout orchestration
+│   ├── SaleSyncService.php         # offline→online sync, idempotency
+│   ├── ReceiptService.php          # PDF/print rendering
+│   ├── SaleService.php             # cancel/refund logic
+│   ├── ReportService.php
+│   ├── DashboardService.php
+│   ├── BackupService.php
+│   └── ActivityLogService.php
+└── Support/
+    ├── Money.php                    # integer-cents value object
+    └── SkuGenerator.php
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+database/
+├── migrations/  (chronological, see section 5)
+├── seeders/
+└── factories/
 
-## Laravel Sponsors
+resources/views/
+├── layouts/
+│   ├── admin.blade.php             # back-office shell (sidebar, topbar)
+│   ├── pos.blade.php               # POS shell (PWA manifest, SW registration)
+│   └── guest.blade.php             # Breeze auth shell
+├── components/                     # Blade components (anonymous + class-based)
+│   ├── stat-card.blade.php
+│   ├── data-table.blade.php
+│   ├── modal.blade.php
+│   ├── badge.blade.php
+│   └── chart-card.blade.php
+├── admin/
+│   ├── dashboard/
+│   ├── products/
+│   ├── categories/
+│   ├── suppliers/
+│   ├── purchases/
+│   ├── stock-adjustments/
+│   ├── customers/
+│   ├── sales/
+│   ├── reports/
+│   ├── settings/
+│   └── users/
+├── pos/
+│   ├── register.blade.php          # the actual POS screen (jQuery + IndexedDB)
+│   └── receipt-print.blade.php
+└── auth/                           # Breeze views, themed
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+public/
+├── sw.js                            # POS service worker
+├── manifest.json                    # PWA manifest (POS only)
+└── js/
+    ├── pos/
+    │   ├── db.js                    # IndexedDB wrapper (Dexie)
+    │   ├── cart.js
+    │   ├── sync-queue.js
+    │   └── register.js
+    └── admin/
+        └── (per-page jQuery)
+```
 
-### Premium Partners
+## 4. Core design decisions worth flagging
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. **Stock is never a column on `products`.** It lives in `stock_levels` (product_id, warehouse_id, quantity). Every increment/decrement is also written as an immutable row in `stock_movements` — `stock_levels.quantity` is a derived cache, rebuildable from `stock_movements`. This gives you a real audit trail and makes the "negative stock from offline sync" scenario inspectable instead of mysterious.
 
-## Contributing
+2. **Money is stored as integer cents** (`unsignedBigInteger`), never `decimal`/`float`, to avoid floating-point rounding bugs in tax/discount math. A small `Money` value object centralizes formatting.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. **Sales are append-only.** "Cancel" and "refund" never delete or mutate a `sale`; they create linked `sale_refunds` / set `status` and reverse stock via new `stock_movements`. This matches real accounting practice and is required for the offline-sync trust model anyway.
 
-## Code of Conduct
+4. **Offline sale idempotency**: `sales.client_uuid` (generated in the browser at checkout, before any network call) is unique-indexed. The sync endpoint upserts on this key — replaying a sync is always safe.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. **Price-lock per your requirement**: `sale_items` stores `unit_price` and `unit_cost` as captured at sale time (online or offline), never recomputed from `products` at sync time. A nullable `price_deviation_flagged` boolean + `pos_sync_audits` table records when synced price differs from current catalog price, for back-office review — without blocking the sale.
 
-## Security Vulnerabilities
+6. **RBAC via spatie/laravel-permission** rather than a hand-rolled roles table: battle-tested, plays well with Policies, and gives you Blade directives (`@can`) for free in every view.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+7. **Warehouses are first-class.** `registers` (physical/logical POS terminals) belong to a `warehouse_id`. Every sale, purchase, and stock movement carries a `warehouse_id`. Reports can roll up or filter by warehouse.
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Full ERD and migrations follow in the next files.

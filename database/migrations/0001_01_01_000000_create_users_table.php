@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('avatar_path')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes(); // never hard-delete a user who may own historical sales
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

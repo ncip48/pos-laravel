@@ -6,19 +6,17 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        // Prevent accidental lazy loading from masking N+1 queries in
+        // development -- fails loudly instead of silently issuing extra
+        // queries, which matters a lot here given how relationship-heavy
+        // reporting and POS catalog queries are.
+        \Illuminate\Database\Eloquent\Model::shouldBeStrict(! $this->app->isProduction());
     }
 }

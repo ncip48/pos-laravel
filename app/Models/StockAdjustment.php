@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class StockAdjustment extends Model
 {
@@ -49,7 +50,7 @@ class StockAdjustment extends Model
         return $this->hasMany(StockAdjustmentItem::class);
     }
 
-    public function stockMovements(): HasMany
+    public function stockMovements(): MorphMany
     {
         return $this->morphMany(StockMovement::class, 'reference');
     }

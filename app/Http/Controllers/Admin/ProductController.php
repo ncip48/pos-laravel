@@ -13,6 +13,8 @@ use App\Services\ProductService;
 use App\Support\Money;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
 /**
  * Thin by design: every method validates (via Form Request), calls exactly
@@ -20,12 +22,20 @@ use Illuminate\View\View;
  * (slug generation, SKU generation, image processing, opening-stock seeding)
  * lives in ProductService -- this controller has zero direct DB access.
  */
-class ProductController extends Controller
+class ProductController extends Controller implements HasMiddleware
 {
     public function __construct(
         private readonly ProductService $productService,
-    ) {
-        // $this->authorizeResource(Product::class, 'product');
+    ) {}
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:products.view', only: ['index', 'show']),
+            new Middleware('permission:products.create', only: ['create', 'store']),
+            new Middleware('permission:products.update', only: ['edit', 'update']),
+            new Middleware('permission:products.delete', only: ['destroy']),
+        ];
     }
 
     public function index(): View

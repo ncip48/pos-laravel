@@ -92,8 +92,8 @@ class DashboardService
             $row = $rows->get($key);
             $series[] = [
                 'date' => $key,
-                'revenue' => $row ? round($row->revenue_cents / 100, 2) : 0,
-                'profit' => $row ? round($row->profit_cents / 100, 2) : 0,
+                'revenue' => $row ? round($row->revenue_cents, 2) : 0,
+                'profit' => $row ? round($row->profit_cents, 2) : 0,
             ];
             $cursor->addDay();
         }

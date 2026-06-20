@@ -179,7 +179,7 @@
             });
 
             @if (!empty($paymentBreakdown))
-                const paymentData = @json(collect($paymentBreakdown)->map(fn($p) => ['method' => $p['method'], 'total' => $p['total']->units()]));
+                const paymentData = @json(collect($paymentBreakdown)->map(fn($p) => ['method' => $p['method'], 'total' => $p['total']->amount()]));
 
                 new Chart(document.getElementById('payment-chart'), {
                     type: 'doughnut',

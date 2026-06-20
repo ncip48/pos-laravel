@@ -8,13 +8,20 @@ use App\Repositories\Eloquent\EloquentUnitRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class UnitController extends Controller
+class UnitController extends Controller implements HasMiddleware
 {
     public function __construct(
         private readonly EloquentUnitRepository $unitRepository,
-    ) {
-        $this->middleware('can:units.manage');
+    ) {}
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:units.manage'),
+        ];
     }
 
     public function index(): View

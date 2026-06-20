@@ -42,7 +42,7 @@ class PurchaseItem extends Model
 
     public function unitCost(): Money
     {
-        return Money::fromCents($this->unit_cost_cents);
+        return Money::fromAmount($this->unit_cost_cents);
     }
 
     public function quantityOutstanding(): int

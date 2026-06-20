@@ -34,6 +34,6 @@ class SalePayment extends Model
 
     public function amount(): Money
     {
-        return Money::fromCents($this->amount_cents);
+        return Money::fromAmount($this->amount_cents);
     }
 }

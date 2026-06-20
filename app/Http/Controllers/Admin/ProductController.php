@@ -107,8 +107,8 @@ class ProductController extends Controller implements HasMiddleware
      */
     private function normalizeMoneyFields(array $data): array
     {
-        $data['cost_price_cents'] = Money::fromUnits($data['cost_price'])->cents();
-        $data['selling_price_cents'] = Money::fromUnits($data['selling_price'])->cents();
+        $data['cost_price_cents'] = Money::fromUnits($data['cost_price'])->amount();
+        $data['selling_price_cents'] = Money::fromUnits($data['selling_price'])->amount();
         unset($data['cost_price'], $data['selling_price'], $data['confirm_below_cost']);
 
         return $data;

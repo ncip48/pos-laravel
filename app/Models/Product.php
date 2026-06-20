@@ -80,12 +80,12 @@ class Product extends Model
 
     public function costPrice(): Money
     {
-        return Money::fromCents($this->cost_price_cents);
+        return Money::fromAmount($this->cost_price_cents);
     }
 
     public function sellingPrice(): Money
     {
-        return Money::fromCents($this->selling_price_cents);
+        return Money::fromAmount($this->selling_price_cents);
     }
 
     public function margin(): Money

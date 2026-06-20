@@ -56,7 +56,7 @@ class PurchaseController extends Controller  implements HasMiddleware
         $items = array_map(fn(array $item) => [
             'product_id' => $item['product_id'],
             'quantity_ordered' => $item['quantity_ordered'],
-            'unit_cost_cents' => Money::fromUnits($item['unit_cost'])->cents(),
+            'unit_cost_cents' => Money::fromUnits($item['unit_cost'])->amount(),
         ], $validated['items']);
 
         $purchase = $this->purchaseService->create([
@@ -65,8 +65,8 @@ class PurchaseController extends Controller  implements HasMiddleware
             'order_date' => $validated['order_date'],
             'expected_date' => $validated['expected_date'] ?? null,
             'notes' => $validated['notes'] ?? null,
-            'discount_cents' => Money::fromUnits($validated['discount'] ?? 0)->cents(),
-            'tax_cents' => Money::fromUnits($validated['tax'] ?? 0)->cents(),
+            'discount_cents' => Money::fromUnits($validated['discount'] ?? 0)->amount(),
+            'tax_cents' => Money::fromUnits($validated['tax'] ?? 0)->amount(),
         ], $items, $request->user());
 
         return redirect()

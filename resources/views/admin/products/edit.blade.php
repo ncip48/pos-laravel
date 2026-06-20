@@ -3,7 +3,7 @@
 @section('page-title', 'Edit Product')
 
 @section('content')
-    <div class="max-w-5xl">
+    <div class="">
         <div class="mb-5">
             <a href="{{ route('admin.products.index') }}" class="text-sm text-slate-500 hover:text-slate-700">&larr; Back to
                 Products</a>

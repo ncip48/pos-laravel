@@ -3,7 +3,7 @@
 @section('page-title', 'New Purchase Order')
 
 @section('content')
-    <div class="max-w-4xl">
+    <div class="">
         <div class="mb-5">
             <a href="{{ route('admin.purchases.index') }}" class="text-sm text-slate-500 hover:text-slate-700">&larr; Back to
                 Purchases</a>

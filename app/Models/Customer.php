@@ -37,12 +37,12 @@ class Customer extends Model
 
     public function storeCredit(): Money
     {
-        return Money::fromCents($this->store_credit_cents);
+        return Money::fromAmount($this->store_credit_cents);
     }
 
     public function totalSpent(): Money
     {
-        return Money::fromCents(
+        return Money::fromAmount(
             (int) $this->sales()->whereIn('status', ['completed', 'partially_refunded'])->sum('total_cents')
         );
     }

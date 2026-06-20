@@ -3,7 +3,7 @@
 @section('page-title', $purchase->purchase_number)
 
 @section('content')
-    <div class="max-w-4xl space-y-5">
+    <div class="space-y-5">
         <div class="flex items-center justify-between">
             <a href="{{ route('admin.purchases.index') }}" class="text-sm text-slate-500 hover:text-slate-700">&larr; Back to
                 Purchases</a>
@@ -110,7 +110,7 @@
                             </td>
                             <td class="px-4 py-3 text-right font-mono-num">{{ $item->unitCost()->formatted() }}</td>
                             <td class="px-4 py-3 text-right font-mono-num font-medium">
-                                {{ \App\Support\Money::fromCents($item->subtotal_cents)->formatted() }}</td>
+                                {{ \App\Support\Money::fromAmount($item->subtotal_cents)->formatted() }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -118,17 +118,17 @@
                     <tr>
                         <td colspan="4" class="px-4 py-2 text-right text-slate-500">Subtotal</td>
                         <td class="px-4 py-2 text-right font-mono-num">
-                            {{ \App\Support\Money::fromCents($purchase->subtotal_cents)->formatted() }}</td>
+                            {{ \App\Support\Money::fromAmount($purchase->subtotal_cents)->formatted() }}</td>
                     </tr>
                     <tr>
                         <td colspan="4" class="px-4 py-2 text-right text-slate-500">Discount</td>
                         <td class="px-4 py-2 text-right font-mono-num">
-                            -{{ \App\Support\Money::fromCents($purchase->discount_cents)->formatted() }}</td>
+                            -{{ \App\Support\Money::fromAmount($purchase->discount_cents)->formatted() }}</td>
                     </tr>
                     <tr>
                         <td colspan="4" class="px-4 py-2 text-right text-slate-500">Tax</td>
                         <td class="px-4 py-2 text-right font-mono-num">
-                            {{ \App\Support\Money::fromCents($purchase->tax_cents)->formatted() }}</td>
+                            {{ \App\Support\Money::fromAmount($purchase->tax_cents)->formatted() }}</td>
                     </tr>
                     <tr>
                         <td colspan="4" class="px-4 py-3 text-right font-semibold text-slate-900">Total</td>

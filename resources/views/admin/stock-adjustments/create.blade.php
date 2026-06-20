@@ -3,7 +3,7 @@
 @section('page-title', 'New Stock Adjustment')
 
 @section('content')
-    <div class="max-w-3xl">
+    <div class="">
         <div class="mb-5">
             <a href="{{ route('admin.stock-adjustments.index') }}" class="text-sm text-slate-500 hover:text-slate-700">&larr;
                 Back to Adjustments</a>
@@ -119,7 +119,7 @@
         let itemIndex = 0;
         // product_id -> { name, sku } for display; stock is fetched per (product, warehouse) via data attributes
         const stockEndpointBase =
-        "{{ url('admin/products') }}"; // GET /admin/products/{id}/stock-movements is history, not live qty -- see note below
+            "{{ url('admin/products') }}"; // GET /admin/products/{id}/stock-movements is history, not live qty -- see note below
 
         $(function() {
             function addItemRow() {
@@ -194,7 +194,8 @@
                 $stockByWarehouse = $product->stockLevels->pluck('quantity', 'warehouse_id');
             @endphp
             <option value="{{ $product->id }}" data-stock='{{ $stockByWarehouse->toJson() }}'>{{ $product->name }}
-                ({{ $product->sku }})</option>
+                ({{ $product->sku }})
+            </option>
         @endforeach
     </div>
 @endpush

@@ -65,12 +65,12 @@ class SaleItem extends Model
 
     public function unitPrice(): Money
     {
-        return Money::fromCents($this->unit_price_cents);
+        return Money::fromAmount($this->unit_price_cents);
     }
 
     public function unitCost(): Money
     {
-        return Money::fromCents($this->unit_cost_cents);
+        return Money::fromAmount($this->unit_cost_cents);
     }
 
     /** Per-unit profit, using the price/cost LOCKED at sale time — never recomputed from the live catalog. */

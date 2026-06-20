@@ -129,13 +129,13 @@ class PosService
 
             $paidCents = 0;
             foreach ($payments as $payment) {
-                $paidCents += Money::fromUnits($payment['amount'])->cents();
+                $paidCents += Money::fromUnits($payment['amount'])->amount();
             }
 
             if ($paidCents < $totalCents) {
                 throw new InvalidArgumentException(
-                    'Insufficient payment: total is ' . Money::fromCents($totalCents)->formatted() .
-                        ', received ' . Money::fromCents($paidCents)->formatted() . '.'
+                    'Insufficient payment: total is ' . Money::fromAmount($totalCents)->formatted() .
+                        ', received ' . Money::fromAmount($paidCents)->formatted() . '.'
                 );
             }
 
@@ -195,7 +195,7 @@ class PosService
             foreach ($payments as $payment) {
                 $sale->payments()->create([
                     'method' => $payment['method'],
-                    'amount_cents' => Money::fromUnits($payment['amount'])->cents(),
+                    'amount_cents' => Money::fromUnits($payment['amount'])->amount(),
                     'reference_number' => $payment['reference_number'] ?? null,
                 ]);
             }
@@ -215,7 +215,7 @@ class PosService
         }
 
         return match (DiscountType::from($type)) {
-            DiscountType::Fixed => min($baseAmountCents, Money::fromUnits($value)->cents()),
+            DiscountType::Fixed => min($baseAmountCents, Money::fromUnits($value)->amount()),
             DiscountType::Percent => (int) round($baseAmountCents * (min(100, max(0, $value)) / 100)),
         };
     }

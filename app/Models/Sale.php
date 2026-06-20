@@ -108,12 +108,12 @@ class Sale extends Model
 
     public function total(): Money
     {
-        return Money::fromCents($this->total_cents);
+        return Money::fromAmount($this->total_cents);
     }
 
     public function balanceDue(): Money
     {
-        return Money::fromCents(max(0, $this->total_cents - $this->paid_cents));
+        return Money::fromAmount(max(0, $this->total_cents - $this->paid_cents));
     }
 
     public function isFullyRefundable(): bool
@@ -123,7 +123,7 @@ class Sale extends Model
 
     public function totalRefunded(): Money
     {
-        return Money::fromCents((int) $this->refunds()->sum('amount_cents'));
+        return Money::fromAmount((int) $this->refunds()->sum('amount_cents'));
     }
 
     public function scopeStatus(Builder $query, SaleStatus $status): Builder

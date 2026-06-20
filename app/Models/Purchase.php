@@ -75,7 +75,7 @@ class Purchase extends Model
 
     public function total(): Money
     {
-        return Money::fromCents($this->total_cents);
+        return Money::fromAmount($this->total_cents);
     }
 
     public function isFullyReceived(): bool

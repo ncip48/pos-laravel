@@ -3,7 +3,7 @@
 @section('page-title', $adjustment->adjustment_number)
 
 @section('content')
-    <div class="max-w-3xl space-y-5">
+    <div class="space-y-5">
         <div class="flex items-center justify-between">
             <a href="{{ route('admin.stock-adjustments.index') }}" class="text-sm text-slate-500 hover:text-slate-700">&larr;
                 Back to Adjustments</a>

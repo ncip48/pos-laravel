@@ -216,7 +216,7 @@
                         <div class="flex justify-between items-center py-1 border-t border-theme/50">
                             <label class="text-secondary font-medium">Discount</label>
                             <div class="relative w-32">
-                                <span class="absolute left-2 top-1/2 -translate-y-1/2 text-secondary text-xs">$</span>
+                                <span class="absolute left-2 top-1/2 -translate-y-1/2 text-secondary text-xs">Rp</span>
                                 <input type="number" step="0.01" min="0" name="discount"
                                     value="{{ old('discount', 0) }}"
                                     class="w-full rounded-xl border-theme pl-5 pr-3 py-1.5 bg-primary-green-light/10 text-sm text-right font-mono-num focus:ring-2 focus:ring-primary-green focus:border-transparent transition">
@@ -225,7 +225,7 @@
                         <div class="flex justify-between items-center py-1 border-t border-theme/50">
                             <label class="text-secondary font-medium">Tax</label>
                             <div class="relative w-32">
-                                <span class="absolute left-2 top-1/2 -translate-y-1/2 text-secondary text-xs">$</span>
+                                <span class="absolute left-2 top-1/2 -translate-y-1/2 text-secondary text-xs">Rp</span>
                                 <input type="number" step="0.01" min="0" name="tax"
                                     value="{{ old('tax', 0) }}"
                                     class="w-full rounded-xl border-theme pl-5 pr-3 py-1.5 bg-primary-green-light/10 text-sm text-right font-mono-num focus:ring-2 focus:ring-primary-green focus:border-transparent transition">
@@ -284,9 +284,9 @@
             </td>
             <td class="py-2 px-2">
                 <div class="relative">
-                    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-secondary text-xs">$</span>
+                    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-secondary text-xs">Rp</span>
                     <input type="number" step="0.01" min="0" name="items[__INDEX__][unit_cost]"
-                        value="0.00"
+                        value="0"
                         class="cost-input w-full rounded-xl border-theme pl-5 pr-3 py-2 bg-primary-green-light/10 text-sm font-mono-num text-right focus:ring-2 focus:ring-primary-green focus:border-transparent transition"
                         required>
                 </div>

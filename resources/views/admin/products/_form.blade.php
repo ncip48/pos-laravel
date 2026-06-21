@@ -170,10 +170,10 @@
                         </label>
                         <div class="relative">
                             <span
-                                class="absolute left-3 top-1/2 -translate-y-1/2 text-secondary font-medium text-sm">{{ $currencySymbol ?? '$' }}</span>
+                                class="absolute left-3 top-1/2 -translate-y-1/2 text-secondary font-medium text-sm">{{ $currencySymbol ?? 'Rp' }}</span>
                             <input type="number" step="0.01" min="0" name="cost_price" id="cost_price"
                                 value="{{ old('cost_price', isset($product) ? $product->costPrice()->units() : '') }}"
-                                required placeholder="0.00"
+                                required placeholder="0"
                                 class="w-full rounded-xl border-theme pl-8 pr-4 py-2.5 bg-primary-green-light/10 text-sm font-mono-num focus:ring-2 focus:ring-primary-green focus:border-transparent transition @error('cost_price') border-red-500 ring-2 ring-red-500 @enderror">
                         </div>
                         @error('cost_price')
@@ -189,11 +189,11 @@
                         </label>
                         <div class="relative">
                             <span
-                                class="absolute left-3 top-1/2 -translate-y-1/2 text-secondary font-medium text-sm">{{ $currencySymbol ?? '$' }}</span>
+                                class="absolute left-3 top-1/2 -translate-y-1/2 text-secondary font-medium text-sm">{{ $currencySymbol ?? 'Rp' }}</span>
                             <input type="number" step="0.01" min="0" name="selling_price"
                                 id="selling_price"
                                 value="{{ old('selling_price', isset($product) ? $product->sellingPrice()->units() : '') }}"
-                                required placeholder="0.00"
+                                required placeholder="0"
                                 class="w-full rounded-xl border-theme pl-8 pr-4 py-2.5 bg-primary-green-light/10 text-sm font-mono-num focus:ring-2 focus:ring-primary-green focus:border-transparent transition @error('selling_price') border-red-500 ring-2 ring-red-500 @enderror">
                         </div>
                         @error('selling_price')

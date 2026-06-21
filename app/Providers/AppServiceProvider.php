@@ -8,7 +8,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind('permission', \Spatie\Permission\Middleware\PermissionMiddleware::class);
+        $this->app->bind('role', \Spatie\Permission\Middleware\RoleMiddleware::class);
     }
 
     public function boot(): void

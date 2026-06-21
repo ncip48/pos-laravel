@@ -47,5 +47,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, $request) {
+            // If it's an API request, return JSON
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'You do not have permission to access this.'], 403);
+            }
+
+            // Otherwise, abort cleanly with a 403 standard view
+            abort(403, 'User does not have the right permissions.');
+        });
     })->create();

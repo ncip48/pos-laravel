@@ -41,63 +41,108 @@
             </div>
 
             <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-6 text-sm">
-                <div>
-                    <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Overview</p>
-                    <x-nav-link href="{{ route('admin.dashboard') }}" icon="chart-bar"
-                        :active="request()->routeIs('admin.dashboard')">Dashboard</x-nav-link>
-                </div>
+                @can('dashboard.view')
+                    <div>
+                        <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Overview</p>
+                        <x-nav-link href="{{ route('admin.dashboard') }}" icon="chart-bar"
+                            :active="request()->routeIs('admin.dashboard')">Dashboard</x-nav-link>
+                    </div>
+                @endcan
 
-                <div>
-                    <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Catalog</p>
-                    <x-nav-link href="{{ route('admin.products.index') }}" icon="cube"
-                        :active="request()->routeIs('admin.products.*')">Products</x-nav-link>
-                    <x-nav-link href="{{ route('admin.categories.index') }}" icon="tag"
-                        :active="request()->routeIs('admin.categories.*')">Categories</x-nav-link>
-                    <x-nav-link href="{{ route('admin.units.index') }}" icon="scale"
-                        :active="request()->routeIs('admin.units.*')">Units</x-nav-link>
-                </div>
+                @canany(['products.view', 'categories.manage', 'units.manage'])
+                    <div>
+                        <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Catalog</p>
+                        @can('products.view')
+                            <x-nav-link href="{{ route('admin.products.index') }}" icon="cube"
+                                :active="request()->routeIs('admin.products.*')">Products</x-nav-link>
+                        @endcan
+                        @can('categories.manage')
+                            <x-nav-link href="{{ route('admin.categories.index') }}" icon="tag"
+                                :active="request()->routeIs('admin.categories.*')">Categories</x-nav-link>
+                        @endcan
+                        @can('units.manage')
+                            <x-nav-link href="{{ route('admin.units.index') }}" icon="scale"
+                                :active="request()->routeIs('admin.units.*')">Units</x-nav-link>
+                        @endcan
+                    </div>
+                @endcanany
 
-                <div>
-                    <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Inventory</p>
-                    <x-nav-link href="{{ route('admin.suppliers.index') }}" icon="truck"
-                        :active="request()->routeIs('admin.suppliers.*')">Suppliers</x-nav-link>
-                    <x-nav-link href="{{ route('admin.purchases.index') }}" icon="clipboard-list"
-                        :active="request()->routeIs('admin.purchases.*')">Purchases</x-nav-link>
-                    <x-nav-link href="{{ route('admin.stock-adjustments.index') }}" icon="adjustments"
-                        :active="request()->routeIs('admin.stock-adjustments.*')">Stock Adjustments</x-nav-link>
-                    <x-nav-link href="{{ route('admin.stock-movements.index') }}" icon="clock"
-                        :active="request()->routeIs('admin.stock-movements.index')">Stock Movements</x-nav-link>
-                </div>
+                @canany(['suppliers.view', 'purchases.view', 'stock-adjustments.view', 'stock-movements.view'])
+                    <div>
+                        <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Inventory</p>
+                        @can('suppliers.view')
+                            <x-nav-link href="{{ route('admin.suppliers.index') }}" icon="truck"
+                                :active="request()->routeIs('admin.suppliers.*')">Suppliers</x-nav-link>
+                        @endcan
+                        @can('purchases.view')
+                            <x-nav-link href="{{ route('admin.purchases.index') }}" icon="clipboard-list"
+                                :active="request()->routeIs('admin.purchases.*')">Purchases</x-nav-link>
+                        @endcan
+                        @can('stock-adjustments.view')
+                            <x-nav-link href="{{ route('admin.stock-adjustments.index') }}" icon="adjustments"
+                                :active="request()->routeIs('admin.stock-adjustments.*')">Stock Adjustments</x-nav-link>
+                        @endcan
+                        @can('stock-movements.view')
+                            <x-nav-link href="{{ route('admin.stock-movements.index') }}" icon="clock"
+                                :active="request()->routeIs('admin.stock-movements.index')">Stock Movements</x-nav-link>
+                        @endcan
+                    </div>
+                @endcanany
 
-                <div>
-                    <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Sales</p>
-                    <x-nav-link href="{{ route('admin.customers.index') }}" icon="users"
-                        :active="request()->routeIs('admin.customers.*')">Customers</x-nav-link>
-                    <x-nav-link href="{{ route('admin.sales.index') }}" icon="receipt"
-                        :active="request()->routeIs('admin.sales.*')">Transactions</x-nav-link>
-                    <x-nav-link href="{{ route('admin.reports.sales') }}" icon="document-report"
-                        :active="request()->routeIs('admin.reports.*')">Reports</x-nav-link>
-                </div>
+                @canany(['customers.view', 'sales.view', 'sales.view-all', 'reports.sales', 'reports.profit',
+                    'reports.inventory'])
+                    <div>
+                        <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Sales</p>
+                        @can('customers.view')
+                            <x-nav-link href="{{ route('admin.customers.index') }}" icon="users"
+                                :active="request()->routeIs('admin.customers.*')">Customers</x-nav-link>
+                        @endcan
+                        @canany(['sales.view', 'sales.view-all'])
+                            <x-nav-link href="{{ route('admin.sales.index') }}" icon="receipt"
+                                :active="request()->routeIs('admin.sales.*')">Transactions</x-nav-link>
+                        @endcanany
+                        @canany(['reports.sales', 'reports.profit', 'reports.inventory', 'reports.export'])
+                            <x-nav-link href="{{ route('admin.reports.sales') }}" icon="document-report"
+                                :active="request()->routeIs('admin.reports.*')">Reports</x-nav-link>
+                        @endcanany
+                    </div>
+                @endcanany
 
-                <div>
-                    <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">System</p>
-                    <x-nav-link href="{{ route('admin.settings.edit') }}" icon="cog"
-                        :active="request()->routeIs('admin.settings.*')">Settings</x-nav-link>
-                    <x-nav-link href="{{ route('admin.registers.index') }}" icon="shield-check" :active="request()->routeIs('admin.registers.*')">POS
-                        Registers</x-nav-link>
-                    <x-nav-link href="{{ route('admin.users.index') }}" icon="shield-check" :active="request()->routeIs('admin.users.*') || request()->routeIs('admin.roles.*')">Users &
-                        Roles</x-nav-link>
-                    <x-nav-link href="{{ route('admin.activity-log.index') }}" icon="clock"
-                        :active="request()->routeIs('admin.activity-log.*')">Activity Log</x-nav-link>
-                </div>
+                @canany(['users.view', 'roles.manage', 'activity-logs.view'])
+                    <div>
+                        <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">System</p>
+                        @role('admin')
+                            <div>
+                                <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1">System
+                                </p>
+
+                                <x-nav-link href="{{ route('admin.settings.edit') }}" icon="cog"
+                                    :active="request()->routeIs('admin.settings.*')">Settings</x-nav-link>
+
+                                <x-nav-link href="{{ route('admin.registers.index') }}" icon="shield-check"
+                                    :active="request()->routeIs('admin.registers.*')">POS Registers</x-nav-link>
+                            </div>
+                        @endrole
+                        @canany(['users.view', 'roles.manage'])
+                            <x-nav-link href="{{ route('admin.users.index') }}" icon="shield-check" :active="request()->routeIs('admin.users.*') || request()->routeIs('admin.roles.*')">Users &
+                                Roles</x-nav-link>
+                        @endcanany
+                        @can('activity-logs.view')
+                            <x-nav-link href="{{ route('admin.activity-log.index') }}" icon="clock"
+                                :active="request()->routeIs('admin.activity-log.*')">Activity Log</x-nav-link>
+                        @endcan
+                    </div>
+                @endcanany
             </nav>
 
-            <div class="border-t border-white/10 px-4 py-4">
-                <a href="{{ route('pos.register') ?? '#' }}"
-                    class="flex items-center justify-center gap-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 transition px-3 py-2.5 text-sm font-medium text-white">
-                    Open POS Register
-                </a>
-            </div>
+            @can('pos.access')
+                <div class="border-t border-white/10 px-4 py-4">
+                    <a href="{{ route('pos.register') ?? '#' }}"
+                        class="flex items-center justify-center gap-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 transition px-3 py-2.5 text-sm font-medium text-white">
+                        Open POS Register
+                    </a>
+                </div>
+            @endcan
         </aside>
 
         {{-- Main column --}}

@@ -19,7 +19,8 @@ class DashboardController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('permission:dashboard.view'),
+            // Use the absolute class name with the permission parameter instead of the alias string
+            new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('dashboard.view')),
         ];
     }
 

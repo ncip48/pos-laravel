@@ -13,18 +13,31 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class SettingController extends Controller
+class SettingController extends Controller implements HasMiddleware
 {
     public function __construct(
         private readonly SettingService $settingService,
         private readonly BackupService $backupService,
     ) {}
 
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:settings.store|settings.tax|settings.currency|settings.receipt|settings.backup', only: ['edit']),
+            new Middleware('permission:settings.store', only: ['updateStore']),
+            new Middleware('permission:settings.tax', only: ['updateTax']),
+            new Middleware('permission:settings.currency', only: ['updateCurrency']),
+            new Middleware('permission:settings.receipt', only: ['updateReceipt']),
+            new Middleware('permission:settings.backup', only: ['createBackup', 'downloadBackup', 'deleteBackup']),
+            new Middleware('permission:settings.restore', only: ['restoreBackup']),
+        ];
+    }
+
     public function edit(): View
     {
-        $this->authorizeAny(['settings.store', 'settings.tax', 'settings.currency', 'settings.receipt', 'settings.backup']);
-
         $store = $this->settingService->storeInfo();
         $backups = auth()->user()->can('settings.backup') ? $this->backupService->listBackups() : [];
 
@@ -68,11 +81,8 @@ class SettingController extends Controller
 
     public function createBackup(): RedirectResponse
     {
-        $this->authorizeAbility('settings.backup');
-
         try {
             $filename = $this->backupService->create();
-
             return redirect()
                 ->route('admin.settings.edit')
                 ->with('success', 'Backup created: ' . basename($filename));
@@ -85,25 +95,14 @@ class SettingController extends Controller
 
     public function downloadBackup(string $filename): Response
     {
-        $this->authorizeAbility('settings.backup');
-
         $path = "backups/{$filename}";
-
         abort_unless(Storage::disk('local')->exists($path), 404);
 
         return response()->download(Storage::disk('local')->path($path));
     }
 
-    /**
-     * Restoring is destructive -- requires BOTH the 'settings.restore'
-     * permission (separate from 'settings.backup', since being able to
-     * back up does not imply being trusted to overwrite live data) AND an
-     * explicit typed confirmation from the form (see settings/index.blade.php).
-     */
     public function restoreBackup(string $filename): RedirectResponse
     {
-        $this->authorizeAbility('settings.restore');
-
         request()->validate([
             'confirmation' => ['required', 'in:RESTORE'],
         ], [
@@ -112,7 +111,6 @@ class SettingController extends Controller
 
         try {
             $this->backupService->restore($filename);
-
             return redirect()
                 ->route('admin.settings.edit')
                 ->with('success', 'Database restored successfully.');
@@ -125,20 +123,7 @@ class SettingController extends Controller
 
     public function deleteBackup(string $filename): RedirectResponse
     {
-        $this->authorizeAbility('settings.backup');
-
         $this->backupService->deleteBackup($filename);
-
         return redirect()->route('admin.settings.edit')->with('success', 'Backup deleted.');
-    }
-
-    private function authorizeAbility(string $ability): void
-    {
-        abort_unless(auth()->user()->can($ability), 403);
-    }
-
-    private function authorizeAny(array $abilities): void
-    {
-        abort_unless(auth()->user()->canAny($abilities), 403);
     }
 }

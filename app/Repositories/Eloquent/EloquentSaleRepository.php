@@ -50,7 +50,7 @@ class EloquentSaleRepository extends BaseRepository implements SaleRepositoryInt
 
     public function paginateWithFilters(array $filters, int $perPage = 20): LengthAwarePaginator
     {
-        return $this->paginate($perPage, ['customer', 'cashier', 'warehouse'], function (Builder $query) use ($filters) {
+        return $this->paginate($perPage, ['customer', 'cashier', 'warehouse', 'items', 'items.product'], function (Builder $query) use ($filters) {
             if (!empty($filters['search'])) {
                 $query->where('invoice_number', 'like', "%{$filters['search']}%");
             }

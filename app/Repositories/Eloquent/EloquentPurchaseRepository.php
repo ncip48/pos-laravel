@@ -35,7 +35,7 @@ class EloquentPurchaseRepository extends BaseRepository implements PurchaseRepos
 
     public function paginateWithFilters(array $filters, int $perPage = 15): LengthAwarePaginator
     {
-        return $this->paginate($perPage, ['supplier', 'warehouse', 'user'], function (Builder $query) use ($filters) {
+        return $this->paginate($perPage, ['supplier', 'warehouse', 'user', 'items'], function (Builder $query) use ($filters) {
             if (!empty($filters['search'])) {
                 $query->where('purchase_number', 'like', "%{$filters['search']}%");
             }

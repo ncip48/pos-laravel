@@ -9,7 +9,7 @@
             </div>
             <input type="text" name="name" id="{{ $isEdit ?? false ? 'edit-name' : '' }}"
                 value="{{ old('name', $category->name ?? '') }}" required placeholder="Enter category name..."
-                class="w-full rounded-xl border-theme pl-9 pr-4 py-2.5 bg-primary-green-light/10 text-sm focus:ring-2 focus:ring-primary-green focus:border-transparent transition @error('name') border-red-500 ring-2 ring-red-500 @enderror">
+                class="w-full rounded-xl border-theme pl-9 pr-4 py-2.5 bg-sage-50/50 dark:bg-sage-900/20 text-primary text-sm focus:ring-2 focus:ring-sage-400 dark:focus:ring-sage-500 focus:border-sage-400 dark:focus:border-sage-500 transition @error('name') border-red-500 ring-2 ring-red-500 @enderror">
         </div>
         @error('name')
             <p class="mt-1.5 text-xs text-red-600 flex items-center gap-1">
@@ -26,7 +26,7 @@
                 <x-icon name="folder" class="w-4 h-4" />
             </div>
             <select name="parent_id" id="{{ $isEdit ?? false ? 'edit-parent' : '' }}"
-                class="w-full rounded-xl border-theme pl-9 pr-10 py-2.5 bg-primary-green-light/10 text-sm focus:ring-2 focus:ring-primary-green focus:border-transparent transition appearance-none cursor-pointer">
+                class="w-full rounded-xl border-theme pl-9 pr-10 py-2.5 bg-sage-50/50 dark:bg-sage-900/20 text-primary text-sm focus:ring-2 focus:ring-sage-400 dark:focus:ring-sage-500 focus:border-sage-400 dark:focus:border-sage-500 transition appearance-none cursor-pointer">
                 <option value="">— No parent (top level) —</option>
                 @foreach ($categories ?? \App\Models\Category::rootOnly()->get() as $option)
                     <option value="{{ $option->id }}" @selected(old('parent_id', $category->parent_id ?? null) == $option->id)>
@@ -45,14 +45,14 @@
         <div class="relative">
             <textarea name="description" id="{{ $isEdit ?? false ? 'edit-description' : '' }}" rows="2"
                 placeholder="Optional description..."
-                class="w-full rounded-xl border-theme px-4 py-2.5 bg-primary-green-light/10 text-sm focus:ring-2 focus:ring-primary-green focus:border-transparent transition resize-none">{{ old('description', $category->description ?? '') }}</textarea>
+                class="w-full rounded-xl border-theme px-4 py-2.5 bg-sage-50/50 dark:bg-sage-900/20 text-primary text-sm focus:ring-2 focus:ring-sage-400 dark:focus:ring-sage-500 focus:border-sage-400 dark:focus:border-sage-500 transition resize-none">{{ old('description', $category->description ?? '') }}</textarea>
         </div>
     </div>
 
     <label class="flex items-center gap-3 text-sm text-secondary cursor-pointer group">
         <input type="checkbox" name="is_active" id="{{ $isEdit ?? false ? 'edit-active' : '' }}" value="1"
             @checked(old('is_active', $category->is_active ?? true))
-            class="w-4 h-4 rounded border-theme text-primary-green focus:ring-primary-green focus:ring-2 transition">
+            class="w-4 h-4 rounded border-theme text-sage-600 dark:text-sage-400 focus:ring-sage-400 dark:focus:ring-sage-500 focus:ring-2 transition">
         <span class="group-hover:text-primary transition">Active</span>
         <span class="text-xs text-secondary opacity-60">(Inactive categories won't appear in product forms)</span>
     </label>

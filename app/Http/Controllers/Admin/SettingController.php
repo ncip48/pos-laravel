@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class SettingController extends Controller implements HasMiddleware
 {
@@ -93,7 +94,7 @@ class SettingController extends Controller implements HasMiddleware
         }
     }
 
-    public function downloadBackup(string $filename): Response
+    public function downloadBackup(string $filename): Response|BinaryFileResponse
     {
         $path = "backups/{$filename}";
         abort_unless(Storage::disk('local')->exists($path), 404);

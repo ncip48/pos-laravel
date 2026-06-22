@@ -32,6 +32,7 @@ class BackupService
 
         $process = new Process([
             'mysqldump',
+            '--set-gtid-purged=OFF',
             '--host=' . $config['host'],
             '--port=' . ($config['port'] ?? 3306),
             '--user=' . $config['username'],

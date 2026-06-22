@@ -8,19 +8,19 @@
         {{-- Header --}}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-primary-green-light text-primary-green flex items-center justify-center">
+                <div class="w-10 h-10 rounded-xl bg-sage-100 dark:bg-sage-800/30 text-sage-600 dark:text-sage-400 flex items-center justify-center">
                     <x-icon name="clipboard-list" class="w-5 h-5" />
                 </div>
                 <div>
                     <h2 class="text-xl font-semibold text-primary">Purchase Orders</h2>
                     <div class="flex items-center gap-2 text-sm text-secondary">
                         <span>{{ $purchases->total() }} total orders</span>
-                        <span class="w-1 h-1 rounded-full bg-secondary opacity-30"></span>
+                        <span class="w-1 h-1 rounded-full bg-sage-300 dark:bg-sage-600 opacity-30"></span>
                         <span class="flex items-center gap-1">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span class="w-2 h-2 rounded-full bg-sage-500 dark:bg-sage-400"></span>
                             {{ $purchases->where('status', 'received')->count() }} received
                         </span>
-                        <span class="w-1 h-1 rounded-full bg-secondary opacity-30"></span>
+                        <span class="w-1 h-1 rounded-full bg-sage-300 dark:bg-sage-600 opacity-30"></span>
                         <span class="flex items-center gap-1">
                             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                             {{ $purchases->whereIn('status', ['ordered', 'partially_received'])->count() }} pending
@@ -30,7 +30,7 @@
             </div>
             @can('create', \App\Models\Purchase::class)
                 <a href="{{ route('admin.purchases.create') }}"
-                    class="inline-flex items-center gap-2 rounded-xl bg-primary-green hover:bg-primary-green-dark px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200 group">
+                    class="inline-flex items-center gap-2 rounded-xl bg-sage-600 hover:bg-sage-700 dark:bg-sage-500 dark:hover:bg-sage-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200 group">
                     <x-icon name="plus" class="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
                     New Purchase
                 </a>
@@ -51,7 +51,7 @@
             </div>
             <div class="bg-card rounded-xl border border-theme p-4 shadow-sm">
                 <p class="text-xs font-medium text-secondary uppercase tracking-wider">Pending Orders</p>
-                <p class="text-lg font-bold text-amber-600 mt-1">
+                <p class="text-lg font-bold text-amber-600 dark:text-amber-400 mt-1">
                     {{ $purchases->whereIn('status', ['ordered', 'partially_received'])->count() }}</p>
             </div>
             <div class="bg-card rounded-xl border border-theme p-4 shadow-sm">
@@ -72,7 +72,7 @@
                     </div>
                     <input type="text" name="search" value="{{ $filters['search'] ?? '' }}"
                         placeholder="Search PO number..."
-                        class="w-full rounded-xl border-theme pl-9 pr-4 py-2.5 bg-primary-green-light/10 text-sm focus:ring-2 focus:ring-primary-green focus:border-transparent transition">
+                        class="w-full rounded-xl border-theme pl-9 pr-4 py-2.5 bg-sage-50/50 dark:bg-sage-900/20 text-primary text-sm focus:ring-2 focus:ring-sage-400 dark:focus:ring-sage-500 focus:border-sage-400 dark:focus:border-sage-500 transition">
                 </div>
 
                 <div class="relative">
@@ -80,7 +80,7 @@
                         <x-icon name="check-circle" class="w-4 h-4" />
                     </div>
                     <select name="status"
-                        class="w-full rounded-xl border-theme pl-9 pr-10 py-2.5 bg-primary-green-light/10 text-sm focus:ring-2 focus:ring-primary-green focus:border-transparent transition appearance-none cursor-pointer">
+                        class="w-full rounded-xl border-theme pl-9 pr-10 py-2.5 bg-sage-50/50 dark:bg-sage-900/20 text-primary text-sm focus:ring-2 focus:ring-sage-400 dark:focus:ring-sage-500 focus:border-sage-400 dark:focus:border-sage-500 transition appearance-none cursor-pointer">
                         <option value="">All statuses</option>
                         @foreach (['draft', 'ordered', 'partially_received', 'received', 'cancelled'] as $status)
                             <option value="{{ $status }}" @selected(($filters['status'] ?? '') === $status)>
@@ -88,9 +88,9 @@
                             </option>
                         @endforeach
                     </select>
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary opacity-40 pointer-events-none">
+                    {{-- <div class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary opacity-40 pointer-events-none">
                         <x-icon name="chevron-down" class="w-4 h-4" />
-                    </div>
+                    </div> --}}
                 </div>
 
                 <div class="relative">
@@ -98,27 +98,27 @@
                         <x-icon name="truck" class="w-4 h-4" />
                     </div>
                     <select name="supplier_id"
-                        class="w-full rounded-xl border-theme pl-9 pr-10 py-2.5 bg-primary-green-light/10 text-sm focus:ring-2 focus:ring-primary-green focus:border-transparent transition appearance-none cursor-pointer">
+                        class="w-full rounded-xl border-theme pl-9 pr-10 py-2.5 bg-sage-50/50 dark:bg-sage-900/20 text-primary text-sm focus:ring-2 focus:ring-sage-400 dark:focus:ring-sage-500 focus:border-sage-400 dark:focus:border-sage-500 transition appearance-none cursor-pointer">
                         <option value="">All suppliers</option>
                         @foreach ($suppliers as $supplier)
                             <option value="{{ $supplier->id }}" @selected(($filters['supplier_id'] ?? null) == $supplier->id)>{{ $supplier->name }}
                             </option>
                         @endforeach
                     </select>
-                    <div class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary opacity-40 pointer-events-none">
+                    {{-- <div class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary opacity-40 pointer-events-none">
                         <x-icon name="chevron-down" class="w-4 h-4" />
-                    </div>
+                    </div> --}}
                 </div>
 
                 <div class="flex gap-2">
                     <button type="submit"
-                        class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-primary-green hover:bg-primary-green-dark text-white text-sm font-medium px-4 py-2.5 transition shadow-sm hover:shadow-md">
+                        class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-sage-600 hover:bg-sage-700 dark:bg-sage-500 dark:hover:bg-sage-600 text-white text-sm font-medium px-4 py-2.5 transition shadow-sm hover:shadow-md">
                         <x-icon name="filter" class="w-4 h-4" />
                         Filter
                     </button>
                     @if (request()->hasAny(['search', 'status', 'supplier_id']))
                         <a href="{{ route('admin.purchases.index') }}"
-                            class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-theme text-sm font-medium px-4 py-2.5 text-secondary hover:bg-primary-green-light hover:text-primary transition">
+                            class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-theme text-sm font-medium px-4 py-2.5 text-secondary hover:bg-sage-50 dark:hover:bg-sage-900/20 hover:text-primary transition">
                             <x-icon name="refresh" class="w-4 h-4" />
                             Reset
                         </a>
@@ -142,7 +142,7 @@
         <div class="bg-card rounded-2xl border border-theme overflow-hidden shadow-sm hover:shadow-md transition-shadow">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-theme text-sm">
-                    <thead class="bg-primary-green-light/20">
+                    <thead class="bg-sage-50 dark:bg-sage-900/20">
                         <tr>
                             <th class="px-6 py-3.5 text-left font-medium text-xs uppercase tracking-wider text-secondary">
                                 <span class="flex items-center gap-1.5">
@@ -194,7 +194,7 @@
                             @php
                                 $statusColors = [
                                     'draft' => 'gray',
-                                    'ordered' => 'blue',
+                                    'ordered' => 'info',
                                     'partially_received' => 'warning',
                                     'received' => 'success',
                                     'cancelled' => 'danger',
@@ -207,22 +207,22 @@
                                     'cancelled' => 'x',
                                 ];
                             @endphp
-                            <tr class="hover:bg-primary-green-light/5 transition group cursor-pointer"
+                            <tr class="hover:bg-sage-50/50 dark:hover:bg-sage-900/20 transition group cursor-pointer"
                                 onclick="window.location='{{ route('admin.purchases.show', $purchase) }}'">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
                                         <div
-                                            class="w-8 h-8 rounded-lg bg-primary-green-light/20 flex items-center justify-center flex-shrink-0">
-                                            <x-icon name="clipboard-list" class="w-3.5 h-3.5 text-primary-green" />
+                                            class="w-8 h-8 rounded-lg bg-sage-100/50 dark:bg-sage-800/30 flex items-center justify-center flex-shrink-0">
+                                            <x-icon name="clipboard-list" class="w-3.5 h-3.5 text-sage-600 dark:text-sage-400" />
                                         </div>
                                         <span
-                                            class="font-mono-num font-semibold text-primary-green">{{ $purchase->purchase_number }}</span>
+                                            class="font-mono-num font-semibold text-sage-600 dark:text-sage-400">{{ $purchase->purchase_number }}</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
                                         <div
-                                            class="w-6 h-6 rounded-full bg-primary-green-light text-primary-green flex items-center justify-center text-xs font-medium flex-shrink-0">
+                                            class="w-6 h-6 rounded-full bg-sage-100 dark:bg-sage-800/30 text-sage-600 dark:text-sage-400 flex items-center justify-center text-xs font-medium flex-shrink-0">
                                             {{ substr($purchase->supplier->name, 0, 1) }}
                                         </div>
                                         <span class="text-secondary">{{ $purchase->supplier->name }}</span>
@@ -230,7 +230,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <span
-                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary-green-light/20 text-xs font-medium text-secondary">
+                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sage-100/50 dark:bg-sage-800/30 text-xs font-medium text-sage-700 dark:text-sage-300 border border-sage-200 dark:border-sage-700">
                                         <x-icon name="warehouse" class="w-3 h-3" />
                                         {{ $purchase->warehouse->name }}
                                     </span>
@@ -253,7 +253,7 @@
                                     <x-badge :color="$statusColors[$purchase->status->value]">
                                         <span class="flex items-center gap-1.5">
                                             @if ($purchase->status->value === 'received')
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                                <span class="w-1.5 h-1.5 rounded-full bg-sage-500 dark:bg-sage-400 animate-pulse"></span>
                                             @elseif($purchase->status->value === 'ordered')
                                                 <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
                                             @endif
@@ -264,22 +264,13 @@
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex justify-center gap-1">
                                         <a href="{{ route('admin.purchases.show', $purchase) }}"
-                                            class="p-1.5 rounded-lg text-secondary hover:bg-primary-green-light hover:text-primary-green transition"
+                                            class="p-1.5 rounded-lg text-secondary hover:bg-sage-100 dark:hover:bg-sage-800/30 hover:text-sage-700 dark:hover:text-sage-300 transition"
                                             title="View Details" onclick="event.stopPropagation();">
                                             <x-icon name="eye" class="w-4 h-4" />
                                         </a>
-                                        {{-- @can('update', $purchase)
-                                            @if ($purchase->status->value === 'draft')
-                                                <a href="{{ route('admin.purchases.edit', $purchase) }}"
-                                                    class="p-1.5 rounded-lg text-secondary hover:bg-primary-green-light hover:text-primary-green transition"
-                                                    title="Edit" onclick="event.stopPropagation();">
-                                                    <x-icon name="pencil" class="w-4 h-4" />
-                                                </a>
-                                            @endif
-                                        @endcan --}}
                                         @if ($purchase->status->value === 'ordered' || $purchase->status->value === 'partially_received')
                                             <a href="{{ route('admin.purchases.receive', $purchase) }}"
-                                                class="p-1.5 rounded-lg text-secondary hover:bg-emerald-100 hover:text-emerald-600 transition"
+                                                class="p-1.5 rounded-lg text-secondary hover:bg-sage-100 dark:hover:bg-sage-800/30 hover:text-sage-700 dark:hover:text-sage-300 transition"
                                                 title="Receive Items" onclick="event.stopPropagation();">
                                                 <x-icon name="inbox" class="w-4 h-4" />
                                             </a>
@@ -292,7 +283,7 @@
                                 <td colspan="7" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center">
                                         <div
-                                            class="w-20 h-20 rounded-2xl bg-primary-green-light/20 flex items-center justify-center mb-4">
+                                            class="w-20 h-20 rounded-2xl bg-sage-100/30 dark:bg-sage-800/20 flex items-center justify-center mb-4">
                                             <x-icon name="clipboard-list" class="w-10 h-10 text-secondary opacity-30" />
                                         </div>
                                         <p class="text-lg font-medium text-primary">No purchase orders found</p>
@@ -305,7 +296,7 @@
                                         </p>
                                         @can('create', \App\Models\Purchase::class)
                                             <a href="{{ route('admin.purchases.create') }}"
-                                                class="inline-flex items-center gap-2 mt-4 rounded-xl bg-primary-green hover:bg-primary-green-dark px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200">
+                                                class="inline-flex items-center gap-2 mt-4 rounded-xl bg-sage-600 hover:bg-sage-700 dark:bg-sage-500 dark:hover:bg-sage-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:shadow-md transition-all duration-200">
                                                 <x-icon name="plus" class="w-4 h-4" />
                                                 Create Purchase Order
                                             </a>
